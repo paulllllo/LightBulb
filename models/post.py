@@ -7,6 +7,8 @@ from models.user import User
 from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy import PickleType
 from sqlalchemy.orm import relationship
 
 
@@ -18,8 +20,8 @@ class Post(BaseModel, Base):
         tagline = Column(String(128), nullable=False, default='')
         description = Column(String(1024), nullable=False, default='')
         author_id = Column(String(128), ForeignKey('users.id'), nullable=False)
-        upvotes = Column(Integer, nullable=False, default=0)
-        downvotes = Column(Integer, nullable=False, default=0)
+        upvotes = Column(MutableList.as_mutable(PickleType),
+                                                nullable=False, default=[])
         comment_count = Column(Integer, nullable=False, default=0)
         comments = relationship("Comment",
                                 back_populates="post",
@@ -30,8 +32,7 @@ class Post(BaseModel, Base):
         tagline = ""
         description = ""
         author_id = ""
-        upvotes = 0
-        downvotes = 0
+        upvotes = []
         comment_count = 0
 
     def __init__(self, *args, **kwargs):
