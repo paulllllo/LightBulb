@@ -8,8 +8,10 @@ from flask import abort, jsonify, make_response, request
 
 
 def get_upvotes(element):
-        upvotes = element['upvotes']
-        return len(upvotes)
+        if(element.get('upvotes')):
+                upvotes = element['upvotes']
+                return len(upvotes)
+        return 0
 
 
 @app_views.route('/posts', methods=['GET'], strict_slashes=False)
@@ -26,7 +28,8 @@ def get_posts():
         post.save()
     list_posts = [post.to_dict() for post in all_posts]
     for post in list_posts:
-        del post['comments']
+        if post.get('comments'):
+                del post['comments']
     list_posts.sort(key=get_upvotes, reverse=True)
     return jsonify(list_posts)
 
